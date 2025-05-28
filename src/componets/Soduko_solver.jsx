@@ -1,15 +1,18 @@
 import React, { useState } from "react";
+
 import Button from "./Button"; // your reusable button
 import { motion, AnimatePresence } from "framer-motion";
 
-import {emptyBoard, emptyFixed} from "../logic/emptyBoard"
-import { solveSudoku } from "../logic/solver";
-import { generateFullBoard } from "../logic/generator";
-import { validateBoard } from "../logic/validateBoard";
+import {emptyBoard, emptyFixed} from "../logic/logic/emptyBoard"
+import { solveSudoku } from "../logic/logic/solver";
+import { generateFullBoard } from "../logic/logic/generator";
+import { validateBoard } from "../logic/logic/validateBoard";
 
 export default function SudokuSolver() {
   const [board, setBoard] = useState(emptyBoard);
   const [fixed, setFixed] = useState(emptyFixed);
+  const [difficulty, setDifficulty] = useState("Easy");
+
   const [invalidCells, setInvalidCells] = useState(Array(9).fill(null).map(() => Array(9).fill(false)));
   const [solving, setSolving] = useState(false);
   const [solved, setSolved] = useState(false);
@@ -59,8 +62,21 @@ export default function SudokuSolver() {
       }
     }
 
-    // Reveal 30 clues randomly
-    let clues = 30;
+   
+    let clues;
+switch (difficulty) {
+  case "Easy":
+    clues = 36;
+    break;
+  case "Medium":
+    clues = 30;
+    break;
+  case "Hard":
+    clues = 24;
+    break;
+  default:
+    clues = 30;
+}
     while (clues > 0) {
       const row = Math.floor(Math.random() * 9);
       const col = Math.floor(Math.random() * 9);
@@ -118,7 +134,20 @@ export default function SudokuSolver() {
           {solving ? "Solving..." : "Solve"}
         </Button>
         <Button onClick={handleReset} >Reset</Button>
-      </div>
+        <div className="flex items-center gap-4 mt-4">
+</div>
+  <label  className="px-4 py-2 rounded bg-purple-500 text-white font-bold hover:bg-purple-600 disabled:opacity-50 ">Difficulty:</label>
+  <select
+    value={difficulty}
+    onChange={(e) => setDifficulty(e.target.value)}
+    className="px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+  >
+    <option value="Easy">Easy</option>
+    <option value="Medium">Medium</option>
+    <option value="Hard">Hard</option>
+  </select>
+</div>
+     
 
       <AnimatePresence>
         {solved && (
